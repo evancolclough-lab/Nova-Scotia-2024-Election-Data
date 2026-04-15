@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Scotia Poll Dashboard Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5efe6;
+        --panel: rgba(255, 251, 245, 0.92);
+        --ink: #1f2740;
+        --muted: #5e6678;
+        --border: rgba(31, 39, 64, 0.12);
+        --blue: #1f4db5;
+        --shadow: 0 20px 44px rgba(31, 39, 64, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(31, 77, 181, 0.16), transparent 30%),
+          linear-gradient(160deg, var(--bg) 0%, #f8f4ec 52%, #efe8dd 100%);
+      }
+
+      .page {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 18px 56px;
+      }
+
+      .hero,
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 28px;
+        color: white;
+        background: linear-gradient(135deg, rgba(31, 77, 181, 0.95), rgba(21, 42, 90, 0.92));
+      }
+
+      .hero h1 {
+        margin: 0 0 10px;
+        font-family: "Source Serif 4", serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 0.96;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 65ch;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.84);
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 18px;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .panel {
+        margin-top: 18px;
+        padding: 22px;
+        background: var(--panel);
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 1.2rem;
+      }
+
+      p,
+      li {
+        line-height: 1.65;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        background: rgba(31, 77, 181, 0.08);
+        padding: 0.1rem 0.35rem;
+        border-radius: 6px;
+      }
+
+      .formula {
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: rgba(31, 77, 181, 0.06);
+        border: 1px solid rgba(31, 77, 181, 0.1);
+        font-weight: 600;
+      }
+
+      .note {
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <h1>Dashboard Documentation</h1>
+        <p>
+          This page explains what was built for the Nova Scotia poll-by-poll dashboard, how the
+          Excel workbook is transformed into site data, and how the displayed numbers are
+          calculated.
+        </p>
+        <a class="back-link" href="./index.html">Back to dashboard</a>
+      </section>
+
+      <section class="panel">
+        <h2>What was built</h2>
+        <ul>
+          <li>A static HTML dashboard that can be hosted without a backend.</li>
+          <li>Filters for constituency, poll type, and free-text search by poll or location.</li>
+          <li>Summary cards for districts in scope, polls in scope, total votes, and weighted turnout.</li>
+          <li>Charts for party vote totals and turnout comparisons.</li>
+          <li>A poll-level results table showing district, poll, type, location, turnout, and leading candidate.</li>
+          <li>A workbook-to-JSON conversion script so the data can be regenerated from future spreadsheets.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Data source and processing</h2>
+        <p>
+          The source workbook is <code>42PGE_PollbyPoll_AllEDs_TurnOut_FINAL.xlsx</code>. Each
+          worksheet represents one electoral district. The build script reads the workbook directly
+          from the Excel XML structure, extracts poll rows, and ignores summary rows such as
+          district totals, turnout notes, and footer notes.
+        </p>
+        <p>
+          For each poll row, the script stores the district, poll code, poll type, polling
+          location, elector count, total votes, rejected ballots, declined ballots, and each
+          candidate's votes. It also creates district summaries and top-level metadata for the full
+          dashboard dataset.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Key calculations</h2>
+        <p class="formula">Poll turnout = total votes / electors</p>
+        <p>
+          Each poll's turnout is calculated only when the workbook includes an elector count for
+          that poll.
+        </p>
+
+        <p class="formula">Valid votes = sum of all candidate votes in that poll or district</p>
+        <p>
+          Rejected ballots and declined ballots are not included in valid votes.
+        </p>
+
+        <p class="formula">Candidate vote share = candidate votes / valid votes</p>
+        <p>
+          Vote share is computed for both poll-level candidate results and district-level candidate
+          totals.
+        </p>
+
+        <p class="formula">Weighted turnout = sum of total votes in scope / sum of electors in scope</p>
+        <p>
+          This is the figure shown in the dashboard summary cards. It is weighted because it uses
+          raw totals rather than averaging turnout percentages equally across polls.
+        </p>
+
+        <p class="formula">Leading candidate = candidate with the highest vote total in the current row or filtered view</p>
+        <p>
+          In the poll table, the leading candidate is the highest vote getter for that poll. In the
+          district spotlight, the leading candidate reflects the currently filtered district view.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Poll type rules</h2>
+        <p>The importer assigns poll types from the poll code text:</p>
+        <ul>
+          <li><code>Mobile</code> if the code contains "Mobile"</li>
+          <li><code>Out-of-District</code> if the code contains "Out-of-District"</li>
+          <li><code>Returning Office</code> if the code starts with <code>RO-</code></li>
+          <li><code>Central Poll</code> if the code starts with <code>CP</code></li>
+          <li><code>Combined Poll</code> if the code contains <code>/</code></li>
+          <li><code>Regular Poll</code> otherwise</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Important caveat</h2>
+        <p>
+          Some workbook rows contain votes but no elector count. In those cases, the dashboard can
+          still display vote totals, but turnout cannot be computed for that row. The weighted
+          turnout card currently sums all votes in the filtered scope and divides by the summed
+          electors that are available.
+        </p>
+        <p class="note">
+          That means filtered views containing many rows without elector counts may slightly
+          overstate turnout. If you want, this can be changed so turnout uses only rows that have
+          both votes and elector counts.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Files in the dashboard</h2>
+        <ul>
+          <li><code>index.html</code>: dashboard structure and visible UI sections</li>
+          <li><code>styles.css</code>: layout, styling, and responsive behavior</li>
+          <li><code>app.js</code>: filtering, aggregation, charts, and table rendering</li>
+          <li><code>data/nova-scotia-poll-results.json</code>: generated dataset used by the app</li>
+          <li><code>scripts/build_dataset.py</code>: workbook parser and JSON generator</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
