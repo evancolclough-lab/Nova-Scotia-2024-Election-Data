@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Compare Constituencies</title>
+    <meta
+      name="description"
+      content="Compare Nova Scotia constituencies side by side using turnout, total votes, winners, and party vote breakdowns."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=20260415-1" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script type="module" src="./compare.js?v=20260415-1"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Nova Scotia Election Comparison</p>
+          <h1>Compare one constituency with another.</h1>
+          <p class="hero-text">
+            Pick any two ridings to compare turnout, total votes, winners, and party performance
+            side by side.
+          </p>
+          <div class="hero-actions">
+            <a class="hero-button" href="./index.html">Back to Dashboard</a>
+            <a class="hero-button" href="./documentation.html">Documentation</a>
+          </div>
+        </div>
+        <div class="hero-meta">
+          <div class="meta-pill">
+            <span>Source workbook</span>
+            <strong id="sourceWorkbook">Loading...</strong>
+          </div>
+          <div class="meta-pill">
+            <span>Data refreshed</span>
+            <strong id="generatedAt">Loading...</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="panel compare-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Compare</p>
+              <h2>Head-to-head constituency view</h2>
+            </div>
+          </div>
+
+          <div class="compare-controls">
+            <label class="field">
+              <span>Constituency A</span>
+              <select id="compareDistrictA"></select>
+            </label>
+
+            <label class="field">
+              <span>Constituency B</span>
+              <select id="compareDistrictB"></select>
+            </label>
+          </div>
+
+          <div id="compareSummary" class="compare-summary"></div>
+
+          <div class="compare-visuals">
+            <article class="compare-card">
+              <h3>Party vote totals</h3>
+              <div class="chart-wrap">
+                <canvas id="compareChart" aria-label="Constituency comparison chart"></canvas>
+              </div>
+            </article>
+
+            <article class="compare-card">
+              <h3>Party vote share</h3>
+              <div id="compareBreakdown" class="compare-breakdown"></div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

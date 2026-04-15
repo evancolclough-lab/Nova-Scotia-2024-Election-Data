@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Scotia Poll Dashboard Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5efe6;
+        --panel: rgba(255, 251, 245, 0.92);
+        --ink: #1f2740;
+        --muted: #5e6678;
+        --border: rgba(31, 39, 64, 0.12);
+        --blue: #1f4db5;
+        --shadow: 0 20px 44px rgba(31, 39, 64, 0.08);
+        --bg-gradient-mid: #f8f4ec;
+        --bg-gradient-end: #efe8dd;
+        --code-bg: rgba(31, 77, 181, 0.08);
+        --formula-bg: rgba(31, 77, 181, 0.06);
+        --formula-border: rgba(31, 77, 181, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--ink);
+        position: relative;
+        background: var(--bg);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at top left, rgba(31, 77, 181, 0.16), transparent 30%),
+          linear-gradient(160deg, var(--bg) 0%, var(--bg-gradient-mid) 52%, var(--bg-gradient-end) 100%);
+      }
+
+      .page {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 18px 56px;
+      }
+
+      .hero,
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 28px;
+        color: white;
+        background: linear-gradient(135deg, rgba(31, 77, 181, 0.95), rgba(21, 42, 90, 0.92));
+      }
+
+      .hero h1 {
+        margin: 0 0 10px;
+        font-family: "Source Serif 4", serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 0.96;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 65ch;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.84);
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 18px;
+        margin-right: 14px;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .panel {
+        margin-top: 18px;
+        padding: 22px;
+        background: var(--panel);
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 1.2rem;
+      }
+
+      p,
+      li {
+        line-height: 1.65;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        background: var(--code-bg);
+        padding: 0.1rem 0.35rem;
+        border-radius: 6px;
+      }
+
+      .formula {
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: var(--formula-bg);
+        border: 1px solid var(--formula-border);
+        font-weight: 600;
+      }
+
+      .note {
+        color: var(--muted);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --bg: #0f1625;
+          --panel: rgba(20, 28, 46, 0.92);
+          --ink: #ecf2ff;
+          --muted: #9ca9c1;
+          --border: rgba(179, 198, 230, 0.14);
+          --blue: #7da8ff;
+          --shadow: 0 20px 44px rgba(0, 0, 0, 0.28);
+          --bg-gradient-mid: #111b2d;
+          --bg-gradient-end: #0b1120;
+          --code-bg: rgba(125, 168, 255, 0.12);
+          --formula-bg: rgba(125, 168, 255, 0.12);
+          --formula-border: rgba(125, 168, 255, 0.16);
+        }
+
+        .hero {
+          background: linear-gradient(135deg, rgba(20, 39, 84, 0.96), rgba(8, 15, 31, 0.95));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <h1>Dashboard Documentation</h1>
+        <p>
+          This page explains the full Nova Scotia poll-by-poll app, including the main dashboard,
+          the separate constituency comparison page, the workbook-to-JSON data flow, and how the
+          displayed numbers are calculated.
+        </p>
+        <a class="back-link" href="./index.html">Back to dashboard</a>
+        <a class="back-link" href="./compare.html">Open compare page</a>
+      </section>
+
+      <section class="panel">
+        <h2>What was built</h2>
+        <ul>
+          <li>A static HTML dashboard that runs entirely in the browser with no backend.</li>
+          <li>A main dashboard page for filtering, charting, and browsing poll-level results.</li>
+          <li>A separate constituency comparison page so head-to-head riding comparisons are not mixed into the main dashboard workflow.</li>
+          <li>A documentation page that explains the features, data structure, and calculations.</li>
+          <li>A workbook-to-JSON conversion script so the dataset can be regenerated from future spreadsheets.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Main Dashboard Features</h2>
+        <ul>
+          <li>Constituency filter for narrowing the dashboard to one district or viewing all districts together.</li>
+          <li>Poll type filter for switching between regular polls, mobile polls, combined polls, central polls, returning office polls, and out-of-district entries.</li>
+          <li>Free-text search that matches district names, poll codes, poll types, locations, and winning candidates.</li>
+          <li>Summary cards showing districts in scope, polls in scope, total votes, and weighted turnout for the current filtered view.</li>
+          <li>A district spotlight that changes when a constituency is selected.</li>
+          <li>A party totals chart for the current filtered view.</li>
+          <li>A turnout chart that switches between poll-level and district-level comparisons depending on the current filter state.</li>
+          <li>A collapsible section titled <code>Full province wide list of polls</code>.</li>
+          <li>The poll table starts collapsed by default and can be expanded on demand.</li>
+          <li>The poll table shows district, poll, type, location, electors, votes, turnout, and leading candidate.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>District Spotlight Features</h2>
+        <ul>
+          <li>Winning candidate summary for the currently selected district or filtered district view.</li>
+          <li>Turnout, ballots cast, and poll count for the current district scope.</li>
+          <li>Vote share bars for all candidates in the selected district view.</li>
+          <li>Best poll and worst poll by turnout percentage.</li>
+          <li>Best and worst poll callouts include the poll code, turnout percentage, and polling location.</li>
+        </ul>
+        <p class="note">
+          The best/worst poll feature is intentionally limited to valid <code>Regular Poll</code>
+          rows with turnout between <code>0%</code> and <code>100%</code>. This excludes special
+          rows such as mobile polls or combined entries that can produce misleading percentages.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Comparison Page Features</h2>
+        <ul>
+          <li>A dedicated <code>Compare Constituencies</code> button on the main dashboard opens a separate comparison page.</li>
+          <li>Two constituency selectors let you compare any pair of ridings side by side.</li>
+          <li>Each side shows winner, turnout, votes cast, electors, and number of polls.</li>
+          <li>A center summary shows turnout gap, vote gap, and which district has the higher total vote count.</li>
+          <li>A grouped bar chart compares party vote totals across the two constituencies.</li>
+          <li>A party share breakdown compares each party's vote share on the left and right side of the page.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Navigation and Layout</h2>
+        <ul>
+          <li>The main dashboard hero includes buttons for <code>Documentation</code> and <code>Compare Constituencies</code>.</li>
+          <li>The comparison page includes buttons for returning to the dashboard and opening the documentation page.</li>
+          <li>The app is mobile-friendly and includes responsive layout changes for cards, controls, charts, and the poll table.</li>
+          <li>On smaller screens, the poll table becomes stacked cards with labels so the data remains readable without horizontal scrolling.</li>
+          <li>The page background is fixed to the viewport so expanding the poll table does not change the overall page colour.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Theme and Dark Mode</h2>
+        <ul>
+          <li>The main dashboard automatically follows the device theme using <code>prefers-color-scheme</code>.</li>
+          <li>The separate compare page also follows the device theme automatically.</li>
+          <li>Charts update their axis labels, legends, and grid colors to match light or dark mode.</li>
+          <li>If the device theme changes while the page is already open, the charts rerender to stay readable.</li>
+          <li>This documentation page also supports the device dark mode.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Data Source and Processing</h2>
+        <p>
+          The source workbook is <code>42PGE_PollbyPoll_AllEDs_TurnOut_FINAL.xlsx</code>. Each
+          worksheet represents one electoral district. The build script reads the workbook directly
+          from the Excel XML structure, extracts poll rows, and ignores summary rows such as
+          district totals, turnout notes, and footer notes.
+        </p>
+        <p>
+          For each poll row, the script stores the district, poll code, poll type, polling
+          location, elector count, total votes, rejected ballots, declined ballots, and each
+          candidate's votes. It also creates district summaries and top-level metadata for the full
+          dataset used by both the dashboard and the comparison page.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Key calculations</h2>
+        <p class="formula">Poll turnout = total votes / electors</p>
+        <p>
+          Each poll's turnout is calculated only when the workbook includes an elector count for
+          that poll.
+        </p>
+
+        <p class="formula">Valid votes = sum of all candidate votes in that poll or district</p>
+        <p>
+          Rejected ballots and declined ballots are not included in valid votes.
+        </p>
+
+        <p class="formula">Candidate vote share = candidate votes / valid votes</p>
+        <p>
+          Vote share is computed for both poll-level candidate results and district-level candidate
+          totals.
+        </p>
+
+        <p class="formula">Weighted turnout = sum of total votes in scope / sum of electors in scope</p>
+        <p>
+          This is the figure shown in the dashboard summary cards. It is weighted because it uses
+          raw totals rather than averaging turnout percentages equally across polls.
+        </p>
+
+        <p class="formula">Leading candidate = candidate with the highest vote total in the current row or filtered view</p>
+        <p>
+          In the poll table, the leading candidate is the highest vote getter for that poll. In the
+          district spotlight, the leading candidate reflects the currently filtered district view.
+        </p>
+
+        <p class="formula">Best poll / worst poll = regular poll with the highest / lowest valid turnout percentage in the selected district view</p>
+        <p>
+          These spotlight callouts use only valid regular poll rows so special or aggregate rows do
+          not distort the result.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Poll type rules</h2>
+        <p>The importer assigns poll types from the poll code text:</p>
+        <ul>
+          <li><code>Mobile</code> if the code contains "Mobile"</li>
+          <li><code>Out-of-District</code> if the code contains "Out-of-District"</li>
+          <li><code>Returning Office</code> if the code starts with <code>RO-</code></li>
+          <li><code>Central Poll</code> if the code starts with <code>CP</code></li>
+          <li><code>Combined Poll</code> if the code contains <code>/</code></li>
+          <li><code>Regular Poll</code> otherwise</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Important caveat</h2>
+        <p>
+          Some workbook rows contain votes but no elector count. In those cases, the dashboard can
+          still display vote totals, but turnout cannot be computed for that row. The weighted
+          turnout card currently sums all votes in the filtered scope and divides by the summed
+          electors that are available.
+        </p>
+        <p class="note">
+          That means filtered views containing many rows without elector counts may slightly
+          overstate turnout. If you want, this can be changed so turnout uses only rows that have
+          both votes and elector counts.
+        </p>
+        <p class="note">
+          The separate best/worst poll spotlight already avoids this issue by excluding rows with
+          missing electors, missing votes, invalid percentages, and non-regular poll types.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Files in the App</h2>
+        <ul>
+          <li><code>index.html</code>: main dashboard structure and navigation buttons.</li>
+          <li><code>app.js</code>: main dashboard filtering, spotlight logic, charts, collapsible poll table behavior, and theme-aware chart rendering.</li>
+          <li><code>compare.html</code>: standalone constituency comparison page.</li>
+          <li><code>compare.js</code>: comparison page selectors, summaries, and theme-aware comparison chart logic.</li>
+          <li><code>documentation.html</code>: this feature and calculation reference page, including dark mode support.</li>
+          <li><code>styles.css</code>: shared styling, responsive behavior, and automatic dark mode across the app.</li>
+          <li><code>data/nova-scotia-poll-results.json</code>: generated dataset used by the app.</li>
+          <li><code>scripts/build_dataset.py</code>: workbook parser and JSON generator.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
