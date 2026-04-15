@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Scotia Poll-by-Poll Dashboard</title>
+    <meta
+      name="description"
+      content="Explore Nova Scotia poll-by-poll election results with district filters, poll-level views, turnout metrics, and party vote visualizations."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Nova Scotia Election Dashboard</p>
+          <h1>Poll-by-poll results for every constituency in one place.</h1>
+          <p class="hero-text">
+            Browse all 55 electoral districts, drill into individual polls, and compare turnout
+            and party performance in one place.
+          </p>
+        </div>
+        <div class="hero-meta">
+          <div class="meta-pill">
+            <span>Source workbook</span>
+            <strong id="sourceWorkbook">Loading...</strong>
+          </div>
+          <div class="meta-pill">
+            <span>Data refreshed</span>
+            <strong id="generatedAt">Loading...</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="panel filters-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Filters</p>
+              <h2>Slice the dataset by constituency or poll</h2>
+            </div>
+            <button id="resetButton" class="ghost-button" type="button">Reset filters</button>
+          </div>
+
+          <div class="filters-grid">
+            <label class="field">
+              <span>Constituency</span>
+              <select id="districtSelect">
+                <option value="all">All constituencies</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Poll type</span>
+              <select id="pollTypeSelect">
+                <option value="all">All poll types</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Poll or location</span>
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="Try 001, Mobile, Bedford, or Out-of-District"
+              />
+            </label>
+          </div>
+
+          <p class="filters-footnote" id="scopeSummary">
+            Loading the current scope and matching poll count...
+          </p>
+        </section>
+
+        <section class="stats-grid" id="statsGrid">
+          <article class="stat-card">
+            <span>Districts in scope</span>
+            <strong id="districtCountStat">-</strong>
+          </article>
+          <article class="stat-card">
+            <span>Polls in scope</span>
+            <strong id="pollCountStat">-</strong>
+          </article>
+          <article class="stat-card">
+            <span>Total votes</span>
+            <strong id="votesStat">-</strong>
+          </article>
+          <article class="stat-card">
+            <span>Weighted turnout</span>
+            <strong id="turnoutStat">-</strong>
+          </article>
+        </section>
+
+        <section class="insights-grid">
+          <article class="panel spotlight-panel">
+            <div class="panel-heading compact">
+              <div>
+                <p class="section-kicker">Spotlight</p>
+                <h2 id="spotlightTitle">Loading constituency overview...</h2>
+              </div>
+            </div>
+            <div id="spotlightContent" class="spotlight-content"></div>
+          </article>
+
+          <article class="panel chart-panel">
+            <div class="panel-heading compact">
+              <div>
+                <p class="section-kicker">Votes</p>
+                <h2 id="partyChartTitle">Party vote totals in the current view</h2>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="partyChart" aria-label="Party vote totals chart"></canvas>
+            </div>
+          </article>
+
+          <article class="panel chart-panel wide">
+            <div class="panel-heading compact">
+              <div>
+                <p class="section-kicker">Turnout</p>
+                <h2 id="turnoutChartTitle">Turnout comparison</h2>
+              </div>
+            </div>
+            <div class="chart-wrap tall">
+              <canvas id="turnoutChart" aria-label="Turnout chart"></canvas>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel table-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Poll Table</p>
+              <h2>Every poll in the filtered selection</h2>
+            </div>
+            <p class="table-note" id="tableNote">Loading rows...</p>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>District</th>
+                  <th>Poll</th>
+                  <th>Type</th>
+                  <th>Location</th>
+                  <th>Electors</th>
+                  <th>Votes</th>
+                  <th>Turnout</th>
+                  <th>Leading candidate</th>
+                </tr>
+              </thead>
+              <tbody id="pollTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
