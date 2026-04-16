@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Scotia Poll Dashboard Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Source+Serif+4:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f5efe6;
+        --panel: rgba(255, 251, 245, 0.92);
+        --ink: #1f2740;
+        --muted: #5e6678;
+        --border: rgba(31, 39, 64, 0.12);
+        --blue: #1f4db5;
+        --shadow: 0 20px 44px rgba(31, 39, 64, 0.08);
+        --bg-gradient-mid: #f8f4ec;
+        --bg-gradient-end: #efe8dd;
+        --code-bg: rgba(31, 77, 181, 0.08);
+        --formula-bg: rgba(31, 77, 181, 0.06);
+        --formula-border: rgba(31, 77, 181, 0.1);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", sans-serif;
+        color: var(--ink);
+        position: relative;
+        background: var(--bg);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background:
+          radial-gradient(circle at top left, rgba(31, 77, 181, 0.16), transparent 30%),
+          linear-gradient(160deg, var(--bg) 0%, var(--bg-gradient-mid) 52%, var(--bg-gradient-end) 100%);
+      }
+
+      .page {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 18px 56px;
+      }
+
+      .hero,
+      .panel {
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero {
+        padding: 28px;
+        color: white;
+        background: linear-gradient(135deg, rgba(31, 77, 181, 0.95), rgba(21, 42, 90, 0.92));
+      }
+
+      .hero h1 {
+        margin: 0 0 10px;
+        font-family: "Source Serif 4", serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 0.96;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 65ch;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.84);
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 18px;
+        margin-right: 14px;
+        color: white;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .panel {
+        margin-top: 18px;
+        padding: 22px;
+        background: var(--panel);
+      }
+
+      h2 {
+        margin: 0 0 12px;
+        font-size: 1.2rem;
+      }
+
+      p,
+      li {
+        line-height: 1.65;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 20px;
+      }
+
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        background: var(--code-bg);
+        padding: 0.1rem 0.35rem;
+        border-radius: 6px;
+      }
+
+      .formula {
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: var(--formula-bg);
+        border: 1px solid var(--formula-border);
+        font-weight: 600;
+      }
+
+      .note {
+        color: var(--muted);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          color-scheme: dark;
+          --bg: #0f1625;
+          --panel: rgba(20, 28, 46, 0.92);
+          --ink: #ecf2ff;
+          --muted: #9ca9c1;
+          --border: rgba(179, 198, 230, 0.14);
+          --blue: #7da8ff;
+          --shadow: 0 20px 44px rgba(0, 0, 0, 0.28);
+          --bg-gradient-mid: #111b2d;
+          --bg-gradient-end: #0b1120;
+          --code-bg: rgba(125, 168, 255, 0.12);
+          --formula-bg: rgba(125, 168, 255, 0.12);
+          --formula-border: rgba(125, 168, 255, 0.16);
+        }
+
+        .hero {
+          background: linear-gradient(135deg, rgba(20, 39, 84, 0.96), rgba(8, 15, 31, 0.95));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <h1>Dashboard Documentation</h1>
+        <p>
+          This page explains the full Nova Scotia poll-by-poll app, including the main dashboard,
+          the separate constituency comparison page, the multi-poll analysis page, the interactive
+          map page, the dual-election data flow, and how the displayed numbers are calculated.
+        </p>
+        <a class="back-link" href="./index.html">Back to dashboard</a>
+        <a class="back-link" href="./compare.html">Open compare page</a>
+        <a class="back-link" href="./multi-poll.html">Open multi-poll page</a>
+        <a class="back-link" href="./map.html">Open map page</a>
+      </section>
+
+      <section class="panel">
+        <h2>What was built</h2>
+        <ul>
+          <li>A static HTML dashboard that runs entirely in the browser with no backend.</li>
+          <li>A top-level election toggle with fully separate <code>2024</code> and <code>2021</code> modes, with <code>2024</code> as the default view.</li>
+          <li>A main dashboard page for filtering, charting, and browsing poll-level results.</li>
+          <li>A separate constituency comparison page so head-to-head riding comparisons are not mixed into the main dashboard workflow.</li>
+          <li>A separate multi-poll analysis page for selecting up to 10 polls across one or more districts.</li>
+          <li>A separate interactive map page built from polling-division polygons so you can click into district and poll information geographically.</li>
+          <li>A documentation page that explains the features, data structure, and calculations.</li>
+          <li>Build scripts that convert both the Excel workbooks and the polygon KMZ into static JSON files for the app.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Main Dashboard Features</h2>
+        <ul>
+          <li>An election toggle at the top of the page lets you switch between the 2024 and 2021 provincial elections.</li>
+          <li>Switching elections reloads the dashboard from the selected election dataset instead of mixing years together.</li>
+          <li>Constituency filter for narrowing the dashboard to one district or viewing all districts together.</li>
+          <li>Poll type filter for switching between regular polls, mobile polls, combined polls, central polls, returning office polls, and out-of-district entries.</li>
+          <li>Free-text search that matches district names, poll codes, poll types, locations, and winning candidates.</li>
+          <li>Summary cards showing districts in scope, polls in scope, total votes, and weighted turnout for the current filtered view.</li>
+          <li>A district spotlight that changes when a constituency is selected.</li>
+          <li>A vote totals chart for the current filtered view.</li>
+          <li>A turnout chart that switches between poll-level and district-level comparisons depending on the current filter state.</li>
+          <li>The province-wide turnout chart now shows all constituencies in turnout order, not only a shortened top list.</li>
+          <li>A collapsible section titled <code>Full province wide list of polls</code>.</li>
+          <li>The poll table starts collapsed by default and can be expanded on demand.</li>
+          <li>The poll table is district-first: each district expands to reveal its polls instead of showing one long province-wide flat list.</li>
+          <li>In <code>2024</code>, grouped vote charts use party totals. In <code>2021</code>, grouped vote charts use candidate names only.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>District Spotlight Features</h2>
+        <ul>
+          <li>Winning candidate summary for the currently selected district or filtered district view.</li>
+          <li>Turnout, ballots cast, and poll count for the current district scope.</li>
+          <li>Vote share bars for all candidates in the selected district view.</li>
+          <li>Best poll and worst poll by turnout percentage.</li>
+          <li>Best and worst poll callouts include the poll code, turnout percentage, and polling location.</li>
+        </ul>
+        <p class="note">
+          The best/worst poll feature is intentionally limited to valid <code>Regular Poll</code>
+          rows with turnout between <code>0%</code> and <code>100%</code>. This excludes special
+          rows such as mobile polls or combined entries that can produce misleading percentages.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Comparison Page Features</h2>
+        <ul>
+          <li>A dedicated <code>Compare Constituencies</code> button on the main dashboard opens a separate comparison page.</li>
+          <li>The comparison page has the same election toggle, so <code>2024</code> and <code>2021</code> comparisons stay separate there as well.</li>
+          <li>Two constituency selectors let you compare any pair of ridings side by side.</li>
+          <li>Each side shows winner, turnout, votes cast, electors, and number of polls.</li>
+          <li>A center summary shows turnout gap, vote gap, and which district has the higher total vote count.</li>
+          <li>A grouped bar chart compares vote totals across the two constituencies.</li>
+          <li>A vote share breakdown compares each party or candidate grouping on the left and right side of the page.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Multi-Poll Analysis Features</h2>
+        <ul>
+          <li>A dedicated <code>Multi-Poll Analysis</code> page is linked from both the main dashboard and the comparison page.</li>
+          <li>The page follows the same election-year toggle pattern as the rest of the app, so <code>2024</code> and <code>2021</code> remain separate.</li>
+          <li>The workflow is step-based: first choose districts, then choose up to <code>10</code> polls, then open the analysis results.</li>
+          <li>The district picker uses a compact multi-column grid, and the poll picker groups available polls under collapsible district headers.</li>
+          <li>Selected districts and selected polls appear in summary chips above the step controls.</li>
+          <li>The results section shows summary cards, turnout coverage, best and worst selected polls, district leader margins, and a comparison table for the selected polls.</li>
+          <li>Empty states are shown when no districts are selected, when no polls are selected, or when searches return no matches.</li>
+          <li>The page includes navigation back into poll selection after results are displayed.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Map Page Features</h2>
+        <ul>
+          <li>A dedicated <code>Map Explorer</code> page is linked from the dashboard, comparison page, and multi-poll page.</li>
+          <li>The map page uses the same election-year toggle, so <code>2024</code> and <code>2021</code> map details stay separate.</li>
+          <li>The page loads the March 2026 polling-division polygons and displays them as clickable shapes on a Leaflet map.</li>
+          <li>In <code>2024</code>, polygons are coloured by the winning party for the matched poll: <code>PC Party</code> in blue, <code>NDP</code> in orange, and <code>Liberal</code> in red.</li>
+          <li>In <code>2021</code>, polygons are shaded by turnout bands instead of winning-party colours.</li>
+          <li>District and text filters let you narrow the map to one district or search by poll code, location, service area, or winner.</li>
+          <li>Map filters are distinct by election year, so a district or search view in <code>2024</code> does not overwrite the map view you left in <code>2021</code>.</li>
+          <li>Clicking a polygon opens a details panel showing the selected polling division, turnout, leader, location, and candidate totals when they are available.</li>
+          <li>The details panel also includes district-wide context for the selected polygon, including district winner, turnout, votes cast, and poll count.</li>
+          <li>If a polygon has no exact election-row match, the page still shows the boundary metadata and district summary when possible instead of failing silently.</li>
+          <li>The map includes summary cards for polygons in view, districts in view, exact poll matches, and boundary-only records.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Navigation and Layout</h2>
+        <ul>
+          <li>The main dashboard hero includes buttons for <code>Documentation</code>, <code>Compare Constituencies</code>, <code>Multi-Poll Analysis</code>, and <code>Map Explorer</code>.</li>
+          <li>The comparison page includes buttons for returning to the dashboard, opening the documentation page, opening the multi-poll page, and opening the map page.</li>
+          <li>The multi-poll page includes buttons back to the dashboard, compare page, documentation page, and map page.</li>
+          <li>The documentation page links back to the main dashboard, the compare page, the multi-poll page, and the map page.</li>
+          <li>The dashboard, compare page, multi-poll page, and map page all include an election-year toggle near the top of the hero area.</li>
+          <li>The app is mobile-friendly and includes responsive layout changes for cards, controls, charts, and the poll table.</li>
+          <li>On smaller screens, the poll table becomes stacked cards with labels so the data remains readable without horizontal scrolling.</li>
+          <li>The map page also collapses to a one-column layout on smaller screens so the map and details panel remain usable on mobile.</li>
+          <li>The page background is fixed to the viewport so expanding the poll table does not change the overall page colour.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Theme and Dark Mode</h2>
+        <ul>
+          <li>The main dashboard automatically follows the device theme using <code>prefers-color-scheme</code>.</li>
+          <li>The separate compare page also follows the device theme automatically.</li>
+          <li>The map page switches both its page styling and base map tiles to match light or dark mode.</li>
+          <li>Charts update their axis labels, legends, and grid colors to match light or dark mode.</li>
+          <li>If the device theme changes while the page is already open, the charts rerender to stay readable.</li>
+          <li>This documentation page also supports the device dark mode.</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Data Source and Processing</h2>
+        <p>
+          The app now uses two source workbooks:
+        </p>
+        <ul>
+          <li><code>42PGE_PollbyPoll_AllEDs_TurnOut_FINAL.xlsx</code> for the <code>2024</code> election.</li>
+          <li><code>41PGE_PollbyPoll_AllEDs_TurnOut_FINAL.xlsx</code> for the <code>2021</code> election.</li>
+        </ul>
+        <p>
+          Each worksheet represents one electoral district. The build script reads the workbooks
+          directly from the Excel XML structure, extracts poll rows, ignores summary/footer rows,
+          and then writes a single JSON file with separate <code>2024</code> and <code>2021</code>
+          sections under a shared top-level metadata block.
+        </p>
+        <p>
+          The map page also uses a polygon source file:
+        </p>
+        <ul>
+          <li><code>ProvincialPollingDivisionPolygons_March_2026.kmz</code> for the polling-division map geometry.</li>
+        </ul>
+        <p>
+          For each poll row, the script stores the district, poll code, poll type, polling
+          location, elector count, total votes, rejected ballots, declined ballots, and each
+          candidate's votes. It also creates district summaries and election-specific metadata for
+          both years.
+        </p>
+        <p>
+          The map build script reads the KMZ file, extracts each polygon placemark, parses the
+          embedded district and poll metadata, simplifies the geometry, and writes a browser-ready
+          static map JSON file.
+        </p>
+        <p class="note">
+          The <code>2021</code> mode is intentionally grouped by candidate name only. It does not
+          attempt to normalize party groupings across the 2021 workbook in the charts and grouped
+          summaries.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Key calculations</h2>
+        <p class="formula">Poll turnout = total votes / electors</p>
+        <p>
+          Each poll's turnout is calculated only when the workbook includes an elector count for
+          that poll.
+        </p>
+
+        <p class="formula">Valid votes = sum of all candidate votes in that poll or district</p>
+        <p>
+          Rejected ballots and declined ballots are not included in valid votes.
+        </p>
+
+        <p class="formula">Candidate vote share = candidate votes / valid votes</p>
+        <p>
+          Vote share is computed for both poll-level candidate results and district-level candidate
+          totals.
+        </p>
+
+        <p class="formula">Grouped vote totals = sum of votes for each grouping in the active election mode</p>
+        <p>
+          In <code>2024</code>, the grouping is by party. In <code>2021</code>, the grouping is by
+          candidate name.
+        </p>
+
+        <p class="formula">Weighted turnout = sum of total votes in scope / sum of electors in scope</p>
+        <p>
+          This is the figure shown in the dashboard summary cards. It is weighted because it uses
+          raw totals rather than averaging turnout percentages equally across polls.
+        </p>
+
+        <p class="formula">Leading candidate = candidate with the highest vote total in the current row or filtered view</p>
+        <p>
+          In the poll table, the leading candidate is the highest vote getter for that poll. In the
+          district spotlight, the leading candidate reflects the currently filtered district view.
+        </p>
+
+        <p class="formula">Best poll / worst poll = regular poll with the highest / lowest valid turnout percentage in the selected district view</p>
+        <p>
+          These spotlight callouts use only valid regular poll rows so special or aggregate rows do
+          not distort the result.
+        </p>
+
+        <p class="formula">Multi-poll weighted turnout = sum of total votes across selected polls / sum of electors across selected polls</p>
+        <p>
+          The multi-poll page uses the same weighted-turnout approach as the main dashboard, but it
+          applies it only to the user-selected polls.
+        </p>
+
+        <p class="formula">Multi-poll best / worst poll = selected poll with the highest / lowest turnout percentage</p>
+        <p>
+          On the multi-poll page, the best and worst poll callouts are chosen from the currently
+          selected poll set rather than from an entire district.
+        </p>
+
+        <p class="formula">District margin in multi-poll analysis = total votes for the leading candidate across selected polls in a district - total votes for the runner-up across those same selected polls</p>
+        <p>
+          The margin shown on the multi-poll page is not a full-district election margin unless all
+          polls from that district are selected. It is the margin within the subset of selected
+          polls for that district.
+        </p>
+
+        <p class="formula">Multi-poll candidate totals = sum of each candidate's votes across the selected polls in the current district or row</p>
+        <p>
+          The comparison table shows each selected poll's candidate totals directly, and the district
+          margin cards aggregate those totals across all selected polls in each district.
+        </p>
+
+        <p class="formula">Map poll join = exact match on district number + poll code between the polygon metadata and the selected election dataset</p>
+        <p>
+          The map page joins each polygon to election results by matching the polygon district
+          number and poll code to the selected election's poll rows. If there is no exact match,
+          the polygon still appears, but it is treated as boundary-only context rather than a
+          fully matched election poll.
+        </p>
+
+        <p class="formula">2024 map fill = winning party color for the matched poll</p>
+        <p>
+          In <code>2024</code>, a matched polygon is filled by the winning party for that poll:
+          <code>PC Party</code> is blue, <code>NDP</code> is orange, and <code>Liberal</code> is red.
+          Other matched winners use a fallback color, and polygons without an exact match stay neutral.
+        </p>
+
+        <p class="formula">2021 map fill = turnout band based on the matched poll's turnout percentage</p>
+        <p>
+          In <code>2021</code>, a matched polygon is filled from turnout bands based on that poll's
+          turnout percentage. Polygons without an exact match are shown in a neutral fallback color.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Poll type rules</h2>
+        <p>The importer assigns poll types from the poll code text:</p>
+        <ul>
+          <li><code>Mobile</code> if the code contains "Mobile"</li>
+          <li><code>Out-of-District</code> if the code contains "Out-of-District"</li>
+          <li><code>Returning Office</code> if the code starts with <code>RO-</code></li>
+          <li><code>Central Poll</code> if the code starts with <code>CP</code></li>
+          <li><code>Combined Poll</code> if the code contains <code>/</code></li>
+          <li><code>Regular Poll</code> otherwise</li>
+        </ul>
+      </section>
+
+      <section class="panel">
+        <h2>Important caveat</h2>
+        <p>
+          Some workbook rows contain votes but no elector count. In those cases, the dashboard can
+          still display vote totals, but turnout cannot be computed for that row. The weighted
+          turnout card currently sums all votes in the filtered scope and divides by the summed
+          electors that are available.
+        </p>
+        <p class="note">
+          That means filtered views containing many rows without elector counts may slightly
+          overstate turnout. If you want, this can be changed so turnout uses only rows that have
+          both votes and elector counts.
+        </p>
+        <p class="note">
+          The separate best/worst poll spotlight already avoids this issue by excluding rows with
+          missing electors, missing votes, invalid percentages, and non-regular poll types.
+        </p>
+        <p class="note">
+          The map page has a different caveat: the polygon file is from March 2026, while the
+          election data is from 2024 and 2021. Most polygons join cleanly by district number and
+          poll code, but some polygons are boundary-only because there is no exact historical poll
+          row to match.
+        </p>
+      </section>
+
+      <section class="panel">
+        <h2>Files in the App</h2>
+        <ul>
+          <li><code>index.html</code>: main dashboard structure, navigation buttons, and the election toggle container.</li>
+          <li><code>app.js</code>: main dashboard filtering, election switching, spotlight logic, charts, collapsible poll table behavior, and theme-aware chart rendering.</li>
+          <li><code>compare.html</code>: standalone constituency comparison page with its own election toggle.</li>
+          <li><code>compare.js</code>: comparison page election switching, selectors, summaries, and theme-aware comparison chart logic.</li>
+          <li><code>multi-poll.html</code>: step-based multi-poll selection and analysis page.</li>
+          <li><code>multi-poll.js</code>: district selection, poll selection, step flow, turnout summaries, margin calculations, and selected-poll comparison table logic.</li>
+          <li><code>map.html</code>: standalone map page structure, map filters, stats, and details panel.</li>
+          <li><code>map.js</code>: Leaflet map setup, election-aware polygon joins, filters, detail rendering, and dark-mode base map switching.</li>
+          <li><code>documentation.html</code>: this feature and calculation reference page, including dark mode support.</li>
+          <li><code>styles.css</code>: shared styling, responsive behavior, and automatic dark mode across the app.</li>
+          <li><code>data/nova-scotia-poll-results.json</code>: generated multi-election dataset used by the app.</li>
+          <li><code>data/nova-scotia-poll-map.json</code>: generated polling-division geometry and metadata used by the map page.</li>
+          <li><code>scripts/build_dataset.py</code>: workbook parser and JSON generator for the combined 2024 + 2021 data file.</li>
+          <li><code>scripts/build_map_data.py</code>: KMZ parser and static map-data generator for the polling-division page.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
